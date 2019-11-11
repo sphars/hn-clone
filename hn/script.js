@@ -20,11 +20,10 @@ fetch(topStoriesURL)
     })
     .then(data => {
         //console.log(data);
-        stories = data;
 
         //limit for now
         for(let i = 0; i < 50; i++){
-            getStoryDetails(stories[i]);
+            getStoryDetails(data[i]);
         }
     })
     .catch(err => {
@@ -41,11 +40,11 @@ function getStoryDetails(itemId){
             return respose.json();
         })
         .then(data => {
-            //console.log(data);
             createStoryCard(data);
+            stories.push(data);
         })
         .catch(err => {
-            console.log(`error fetching story: ${itemId}`);
+            console.log(`error fetching story ${itemId} with ${err}`);
         });
 
 }
@@ -67,7 +66,15 @@ function createStoryCard(story){
 
     let domain = document.createElement('span');
     domain.setAttribute('class', 'domain');
-    domain.textContent = `(${getDomain(story.url)})`;
+
+    // check if there is a associated url
+    if(story.hasOwnProperty('url')){
+        domain.textContent = `(${getDomain(story.url)})`;
+    } else {
+        // set the url to the story itself
+        var url = `https://news.ycombinator.com/item?id=${story.id}`
+        domain.textContent = `(${getDomain(url)})`;
+    }
 
     // links
     let linkDiv = document.createElement('div');
@@ -105,6 +112,7 @@ function createStoryCard(story){
     linkDiv.appendChild(hnLink);
 
 }
+
 
 // gets the domain from a full url
 function getDomain(url){
