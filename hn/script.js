@@ -58,6 +58,20 @@ const getElapsedTime = (timestamp) => {
     return `${Math.round(elapsed / YEAR)} year${Math.round(elapsed / YEAR) == 1 ? "": "s"}`;
 }
 
+// get a nicely formatted time
+const getNiceTime = (timestamp) => {
+    var a = new Date(timestamp * 1000);
+
+    var lang;
+    if(window.navigator.languages){
+        lang = window.navigator.languages[0];
+    } else{
+        lang = window.navigator.userLanguage || window.navigator.language;
+    }
+    var time = a.toLocaleString(lang, {weekday: 'short', year:'numeric', month:'short', day:'numeric', hour:'numeric', minute:'numeric', hour12:true});
+    return time;
+}
+
 // get the top HN stories
 function getStories(feed){
     fetch(BASEURL + feed)
@@ -158,6 +172,7 @@ function createStoryCard(story){
     // set time elapsed
     let timeElapse = document.createElement('span');
     timeElapse.innerText = `${getElapsedTime(story.time * 1000)}`;
+    timeElapse.title = `${getNiceTime(story.time)}`
     
     // link to the story
     let hnLink = document.createElement('a');
@@ -184,7 +199,7 @@ function createStoryCard(story){
     headline.appendChild(domain);
     
     //add links element
-    subtext.append(score, ' by ', authorSpan, ' | ', hnLink);
+    subtext.append(score, ' by ', authorSpan, ' ', timeElapse, ' | ', hnLink);
 
 }
 
@@ -213,6 +228,7 @@ function getDomain(url){
     return domain;
 }
 
+// change navigation between the different feeds
 function changeNav(){
     for (var i=0; i<navItems.length; i++){
         navItems[i].classList.remove('selected');
@@ -247,4 +263,5 @@ function changeNav(){
     }
 }
 
+// load something on first load
 window.onload = getStories(TOPSTORIES);
