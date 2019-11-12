@@ -8,11 +8,31 @@ container.setAttribute('class', 'container');
 // add container to the document
 app.appendChild(container);
 
+// endpoints for the different stories
+const BASEURL = 'https://hacker-news.firebaseio.com/v0/';
+const TOPSTORIES = 'topstories.json';
+const NEWSTORIES = 'newstories.json';
+const BESTSTORIES = 'beststories.json';
+const ASKSTORIES = 'askstories.json';
+const SHOWSTORIES = 'showstories.json';
+const JOBSTORIES = 'jobstories.json';
+
+// top nav elements
+const topNav = document.getElementById('top');
+const newNav = document.getElementById('new');
+const bestNav = document.getElementById('best');
+const askNav = document.getElementById('ask');
+const showNav = document.getElementById('show');
+const jobNav = document.getElementById('jobs');
+
+var navItems = document.getElementsByClassName('nav-item');
+
+for (var i=0; i<navItems.length; i++){
+    navItems[i].addEventListener('click', changeNav);
+}
 
 // array for stories
 var stories = [];
-
-const topStoriesURL = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 
 // function for getting the friendly time elapsed since a date. timestamp is the time in milliseconds
 // adapted from https://stackoverflow.com/a/53138036
@@ -39,21 +59,21 @@ const getElapsedTime = (timestamp) => {
 }
 
 // get the top HN stories
-function getTopStories(){
-    fetch(topStoriesURL)
+function getStories(feed){
+    fetch(BASEURL + feed)
         .then(response => {
             return response.json();
         })
         .then(data => {
-            //console.log(data);
+            console.log(`Num stories: ${data.length}`);
 
             //limit for now
-            for(let i = 0; i < 50; i++){
+            for(let i = 0; i < data.length && i < 50 ; i++){
                 getStoryDetails(data[i]);
             }
         })
         .catch(err => {
-            console.log('error fetching');
+            console.log('error fetching ' + err);
         });
 }
 
@@ -74,6 +94,15 @@ function getStoryDetails(itemId){
             console.log(`error fetching story ${itemId} with ${err}`);
         });
 
+}
+
+function clearStories(){
+    stories.length = 0;
+    var storyElements = document.getElementsByClassName('story');
+
+    while(storyElements.length > 0){
+        storyElements[0].parentNode.removeChild(storyElements[0]);
+    }
 }
 
 // creates HTML markup for a story
@@ -184,5 +213,38 @@ function getDomain(url){
     return domain;
 }
 
+function changeNav(){
+    for (var i=0; i<navItems.length; i++){
+        navItems[i].classList.remove('selected');
+    }
 
-getTopStories();
+    clearStories();
+    
+    this.className += ' selected';
+    console.log(this.id);
+
+    switch (this.id) {
+        case 'top':
+            getStories(TOPSTORIES);
+            break;    
+        case 'new':
+            getStories(NEWSTORIES);
+            break;
+        case 'best':
+            getStories(BESTSTORIES);
+            break;
+        case 'ask':
+            getStories(ASKSTORIES);
+            break;
+        case 'show':
+            getStories(SHOWSTORIES);
+            break;
+        case 'jobs':
+            getStories(JOBSTORIES);
+            break;
+        default:
+            getStories(TOPSTORIES);
+    }
+}
+
+window.onload = getStories(TOPSTORIES);
