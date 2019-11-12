@@ -1,6 +1,7 @@
 #root{
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 1rem;
 }
 
 html{
@@ -9,7 +10,7 @@ html{
 }
 
 .story{
-    margin: 1rem;
+    margin: 1rem 0;
     padding: 1rem;
     background: #fff;
 }
@@ -28,10 +29,10 @@ html{
     font-size: .7rem;
 }
 
-.links{
+.subtext{
     font-size: .75rem;
 }
 
-.links *{
-    margin-right: .5rem;
+.hot::before{
+    content: "🔥 ";
 }

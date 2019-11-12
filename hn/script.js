@@ -83,10 +83,11 @@ function createStoryCard(story){
     let storyCard = document.createElement('div');
     storyCard.setAttribute('class', 'story');
 
-    // story title and domain
-    let headlineDiv = document.createElement('div');
-    headlineDiv.setAttribute('class', 'headline');
+    // headline div
+    let headline = document.createElement('div');
+    headline.setAttribute('class', 'headline');
 
+    // story title and domain
     let storyTitle = document.createElement('a');
     storyTitle.setAttribute('class', 'title')
     storyTitle.setAttribute('href', story.url);
@@ -105,44 +106,60 @@ function createStoryCard(story){
         domain.textContent = `(${getDomain(url)})`;
     }
 
-    // links
-    let linkDiv = document.createElement('div');
-    linkDiv.setAttribute('class', 'links');
-
+    // subtext links
+    let subtext = document.createElement('div');
+    subtext.setAttribute('class', 'subtext');
+    
+    // get the score of the story
+    let score = document.createElement('span');
+    score.setAttribute('class', 'score');
+    score.textContent = `${story.score} points `;
+    if (story.score >= 300){
+        score.className += ' hot';
+    }
+    
+    // get the user who posted the story
+    let authorSpan = document.createElement('span');
+    let author = document.createElement('a');
+    author.setAttribute('href', `https://news.ycombinator.com/user?id=${story.by}`);
+    author.setAttribute('target', '_blank');
+    author.textContent = `${story.by}`;    
+    authorSpan.append(author);
+    
+    // set time elapsed
+    let timeElapse = document.createElement('span');
+    timeElapse.innerText = `${getElapsedTime(story.time * 1000)}`;
+    
+    // link to the story
     let hnLink = document.createElement('a');
     hnLink.setAttribute('href', `https://news.ycombinator.com/item?id=${story.id}`);
     hnLink.setAttribute('target', '_blank');
 
     // check if the story has any comments
-    if(story.hasOwnProperty('kids')){
-        hnLink.innerHTML = `${story.kids.length} Comments`;
+    if(story.hasOwnProperty('descendants')){
+        hnLink.innerText = `${story.descendants} Comments`;
+        if(story.descendants >= 100) hnLink.setAttribute('class', 'hot');
     } else{
-        hnLink.innerHTML = `0 Comments`;
+        hnLink.innerText = '0 Comments';
     }
-
-    let score = document.createElement('span');
-    score.setAttribute('class', 'score');
-    score.textContent = `${story.score} points by ${story.by} ${getElapsedTime(story.time * 1000)}`;
 
     //add the story element
     container.appendChild(storyCard);
 
     //add story elements
-    storyCard.appendChild(headlineDiv);   
-    storyCard.appendChild(linkDiv);
+    storyCard.appendChild(headline);   
+    storyCard.appendChild(subtext);
     
     //add headline elements
-    headlineDiv.appendChild(storyTitle);
-    headlineDiv.appendChild(domain);
+    headline.appendChild(storyTitle);
+    headline.appendChild(domain);
     
     //add links element
-    linkDiv.appendChild(score);
-    linkDiv.appendChild(hnLink);
+    subtext.append(score, ' by ', authorSpan, ' | ', hnLink);
 
 }
 
-
-// gets the domain from a full url
+// get the domain from a full url
 function getDomain(url){
     let domain = "", page = "";
     
