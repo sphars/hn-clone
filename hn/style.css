@@ -28,7 +28,10 @@ html{
     font-size: .7rem;
 }
 
-.links a{
+.links{
     font-size: .75rem;
+}
+
+.links *{
     margin-right: .5rem;
 }
