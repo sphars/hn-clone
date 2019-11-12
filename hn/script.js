@@ -14,21 +14,48 @@ var stories = [];
 
 const topStoriesURL = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 
-fetch(topStoriesURL)
-    .then(response => {
-        return response.json();
-    })
-    .then(data => {
-        //console.log(data);
+// function for getting the friendly time elapsed since a date. timestamp is the time in milliseconds
+// adapted from https://stackoverflow.com/a/53138036
+const getElapsedTime = (timestamp) => {
+    if (typeof timestamp !== 'number') return 'NaN';
+    
+    // timestamp is in milliseconds 
+    const SECOND = 1000;
+    const MINUTE = 1000 * 60;
+    const HOUR = 1000 * 60 * 60;
+    const DAY = 1000 * 60 * 60 * 24;
+    const MONTH = 1000 * 60 * 60 * 24 * 30;
+    const YEAR = 1000 * 60 * 60 * 24 * 30 * 12;
+    
+    const elapsed = (new Date()).valueOf() - timestamp;
+    if(elapsed < 0) return 'Date is in the future';
+    
+    if (elapsed <= MINUTE) return `${Math.round(elapsed / SECOND)} second${Math.round(elapsed / SECOND) == 1 ? "": "s"} ago`;
+    if (elapsed <= HOUR) return `${Math.round(elapsed / MINUTE)} minute${Math.round(elapsed / MINUTE) == 1 ? "": "s"} ago`;
+    if (elapsed <= DAY) return `${Math.round(elapsed / HOUR)} hour${Math.round(elapsed / HOUR) == 1 ? "": "s"} ago`;
+    if (elapsed <= MONTH) return `${Math.round(elapsed / DAY)} day${Math.round(elapsed / DAY) == 1 ? "": "s"} ago`;
+    if (elapsed <= YEAR) return `${Math.round(elapsed / MONTH)} month${Math.round(elapsed / MONTH) == 1 ? "": "s"} ago`;
+    return `${Math.round(elapsed / YEAR)} year${Math.round(elapsed / YEAR) == 1 ? "": "s"}`;
+}
 
-        //limit for now
-        for(let i = 0; i < 50; i++){
-            getStoryDetails(data[i]);
-        }
-    })
-    .catch(err => {
-        console.log('error fetching');
-    });
+// get the top HN stories
+function getTopStories(){
+    fetch(topStoriesURL)
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {
+            //console.log(data);
+
+            //limit for now
+            for(let i = 0; i < 50; i++){
+                getStoryDetails(data[i]);
+            }
+        })
+        .catch(err => {
+            console.log('error fetching');
+        });
+}
 
 
 // get top-level details about a story
@@ -95,7 +122,7 @@ function createStoryCard(story){
 
     let score = document.createElement('span');
     score.setAttribute('class', 'score');
-    score.textContent = `${story.score} points by ${story.by} at ${getFriendlyTime(story.time)}`;
+    score.textContent = `${story.score} points by ${story.by} ${getElapsedTime(story.time * 1000)}`;
 
     //add the story element
     container.appendChild(storyCard);
@@ -140,31 +167,5 @@ function getDomain(url){
     return domain;
 }
 
-function getFriendlyTime(timestamp){
-    var time = new Date(timestamp * 1000);
 
-    getElapsedTime(time);
-     
-    return time;
-}
-
-function getElapsedTime(oldDate){
-
-    var now = new Date();
-
-    var timeDiff = now.getTime() - oldDate.getTime();
-
-    console.log(timeDiff);
-
-    var seconds = Math.floor(timeDiff / 1000); 
-    var minutes = Math.floor(seconds / 60); 
-    var hours = Math.floor(minutes / 60);
-    var days = Math.floor(hours / 24);
-
-    console.log(`Old: ${oldDate}`);
-    console.log(`New: ${now}`);
-    console.log(`Days: ${days}`);
-    console.log(`Hours: ${hours}`);
-    console.log(`Minutes: ${minutes}`);
-    console.log(`Seconds: ${seconds}`);
-}
+getTopStories();
