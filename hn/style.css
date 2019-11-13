@@ -35,6 +35,8 @@ nav ul li:hover{
 }
 
 
+
+
 .story{
     margin: 1rem 0;
     padding: 1rem;
@@ -59,6 +61,33 @@ nav ul li:hover{
     font-size: .75rem;
 }
 
+.comment-toggle{
+    color: #001628;
+    cursor: default;
+}
+
+.comment-toggle.has-comments{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 .hot::before{
     content: "🔥 ";
+}
+
+.comments {
+    display: none;
+}
+
+.comments.is-visible {
+    display: block;
+}
+
+.comment{
+    margin: 1rem .5rem;
+    padding: .5rem;
+    font-size: .8rem;
+    border-left: 2px solid #808080;
+    background: #f2f2f2;
+
 }

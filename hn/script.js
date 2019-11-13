@@ -38,18 +38,18 @@ var stories = [];
 // adapted from https://stackoverflow.com/a/53138036
 const getElapsedTime = (timestamp) => {
     if (typeof timestamp !== 'number') return 'NaN';
-    
-    // timestamp is in milliseconds 
+
+    // timestamp is in milliseconds
     const SECOND = 1000;
     const MINUTE = 1000 * 60;
     const HOUR = 1000 * 60 * 60;
     const DAY = 1000 * 60 * 60 * 24;
     const MONTH = 1000 * 60 * 60 * 24 * 30;
     const YEAR = 1000 * 60 * 60 * 24 * 30 * 12;
-    
+
     const elapsed = (new Date()).valueOf() - timestamp;
     if(elapsed < 0) return 'Date is in the future';
-    
+
     if (elapsed <= MINUTE) return `${Math.round(elapsed / SECOND)} second${Math.round(elapsed / SECOND) == 1 ? "": "s"} ago`;
     if (elapsed <= HOUR) return `${Math.round(elapsed / MINUTE)} minute${Math.round(elapsed / MINUTE) == 1 ? "": "s"} ago`;
     if (elapsed <= DAY) return `${Math.round(elapsed / HOUR)} hour${Math.round(elapsed / HOUR) == 1 ? "": "s"} ago`;
@@ -110,6 +110,35 @@ function getStoryDetails(itemId){
 
 }
 
+function getComment(commentId, commentCard){
+    let url = `https://hacker-news.firebaseio.com/v0/item/${commentId}.json`
+
+    fetch(url)
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {
+            createComment(data, commentCard);
+        })
+        .catch(err => {
+            console.log(`error fetching comment ${commentId} with ${err}`);
+        })
+}
+
+function createComment(commentData, parentCard){
+    if(!commentData.deleted){
+        let commentDiv = document.createElement('div');
+        commentDiv.setAttribute('class', 'comment');
+        commentDiv.innerHTML = commentData.text;
+    
+        let authorDiv = document.createElement('div');
+        authorDiv.innerText = `By: ${commentData.by} [${commentData.id}]`;
+    
+        commentDiv.appendChild(authorDiv);
+        parentCard.appendChild(commentDiv);    
+    }    
+}
+
 function clearStories(){
     stories.length = 0;
     var storyElements = document.getElementsByClassName('story');
@@ -119,12 +148,29 @@ function clearStories(){
     }
 }
 
+//
+function selectStory(storyid, storyDiv){
+    var selectedStory = stories.find(x => x.id === storyid);
+    var commentsCard;
+
+    //check if commentscard is already created
+    if(!storyDiv.querySelector('.comments')){
+        commentsCard = createCommentsCard(selectedStory);
+        storyDiv.appendChild(commentsCard);
+    } else{
+        commentsCard = storyDiv.querySelector('.comments');
+    }
+
+    toggle(commentsCard);
+}
+
 // creates HTML markup for a story
 function createStoryCard(story){
 
     // story div
     let storyCard = document.createElement('div');
     storyCard.setAttribute('class', 'story');
+    storyCard.setAttribute('storyid', story.id);
 
     // headline div
     let headline = document.createElement('div');
@@ -153,7 +199,7 @@ function createStoryCard(story){
     // subtext links
     let subtext = document.createElement('div');
     subtext.setAttribute('class', 'subtext');
-    
+
     // get the score of the story
     let score = document.createElement('span');
     score.setAttribute('class', 'score');
@@ -161,53 +207,75 @@ function createStoryCard(story){
     if (story.score >= 300){
         score.className += ' hot';
     }
-    
+
     // get the user who posted the story
     let authorSpan = document.createElement('span');
     let author = document.createElement('a');
     author.setAttribute('href', `https://news.ycombinator.com/user?id=${story.by}`);
     author.setAttribute('target', '_blank');
-    author.textContent = `${story.by}`;    
+    author.textContent = `${story.by}`;
     authorSpan.append(author);
-    
+
     // set time elapsed
     let timeElapse = document.createElement('span');
     timeElapse.innerText = `${getElapsedTime(story.time * 1000)}`;
     timeElapse.title = `${getNiceTime(story.time)}`
-    
+
     // link to the story
-    let hnLink = document.createElement('a');
-    hnLink.setAttribute('href', `https://news.ycombinator.com/item?id=${story.id}`);
-    hnLink.setAttribute('target', '_blank');
+    let commentToggle = document.createElement('span');
+    commentToggle.setAttribute('storyid', story.id);
+    commentToggle.setAttribute('class', 'comment-toggle');
 
     // check if the story has any comments
-    if(story.hasOwnProperty('descendants')){
-        hnLink.innerText = `${story.descendants} Comments`;
-        if(story.descendants >= 100) hnLink.setAttribute('class', 'hot');
+    if(story.hasOwnProperty('descendants') && story.descendants > 0){
+        
+        commentToggle.innerText = `View ${story.descendants} Comments`;
+        commentToggle.classList.add('has-comments');
+        
+        if(story.descendants >= 100) commentToggle.classList.add('hot');
+        
+        commentToggle.addEventListener('click', function(){
+            var storyDiv = this.parentNode.parentNode;
+            selectStory(story.id, storyDiv);
+        });
+
     } else{
-        hnLink.innerText = '0 Comments';
+        commentToggle.innerText = '0 Comments';
     }
 
     //add the story element
     container.appendChild(storyCard);
 
     //add story elements
-    storyCard.appendChild(headline);   
+    storyCard.appendChild(headline);
     storyCard.appendChild(subtext);
-    
+
     //add headline elements
     headline.appendChild(storyTitle);
     headline.appendChild(domain);
-    
-    //add links element
-    subtext.append(score, ' by ', authorSpan, ' ', timeElapse, ' | ', hnLink);
 
+    //add links element
+    subtext.append(score, ' by ', authorSpan, ' ', timeElapse, ' | ', commentToggle);
+
+}
+
+function createCommentsCard(story){
+
+    let commentsCard = document.createElement('div');
+    commentsCard.setAttribute('class', 'comments');
+
+    for (let i = 0; i < story.kids.length; i++) {
+        getComment(story.kids[i], commentsCard);        
+    }
+    // getComment(story.kids[0], commentsCard);
+
+    return commentsCard;
 }
 
 // get the domain from a full url
 function getDomain(url){
     let domain = "", page = "";
-    
+
     //remove http://
     if(url.indexOf('http://') == 0){
         url = url.substr(7);
@@ -236,14 +304,14 @@ function changeNav(){
     }
 
     clearStories();
-    
+
     this.className += ' selected';
     console.log(this.id);
 
     switch (this.id) {
         case 'top':
             getStories(TOPSTORIES);
-            break;    
+            break;
         case 'new':
             getStories(NEWSTORIES);
             break;
@@ -262,6 +330,18 @@ function changeNav(){
         default:
             getStories(TOPSTORIES);
     }
+}
+
+var show = function(elem) {
+    elem.classList.add('is-visible');
+};
+
+var hide = function(elem) {
+    elem.classList.remove('is-visible');
+};
+
+var toggle = function(elem) {
+    elem.classList.toggle('is-visible');
 }
 
 // load something on first load
