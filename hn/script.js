@@ -133,7 +133,6 @@ function createStoryCard(story){
     // story title and domain
     let storyTitle = document.createElement('a');
     storyTitle.setAttribute('class', 'title')
-    storyTitle.setAttribute('href', story.url);
     storyTitle.setAttribute('targe', '_blank');
     storyTitle.innerHTML = story.title;
 
@@ -143,10 +142,12 @@ function createStoryCard(story){
     // check if there is a associated url
     if(story.hasOwnProperty('url')){
         domain.textContent = `(${getDomain(story.url)})`;
+        storyTitle.setAttribute('href', story.url);
     } else {
         // set the url to the story itself
         var url = `https://news.ycombinator.com/item?id=${story.id}`
         domain.textContent = `(${getDomain(url)})`;
+        storyTitle.setAttribute('href', url);
     }
 
     // subtext links
