@@ -9,3 +9,5 @@ Goal is practice using JavaScript and APIs.
 * Scroll to top of page
 * Load more stories on scroll down
 * Better styles?
+* Cache results when navigating away from page
+* Save stories (where? local storage for now?)
