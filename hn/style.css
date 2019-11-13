@@ -72,7 +72,10 @@ nav ul li:hover{
 }
 
 .hot::before{
-    content: "🔥 ";
+    content: "🔥";
+    display:inline-block;
+    margin-right: .25rem;
+    text-decoration: none;
 }
 
 .comments {
