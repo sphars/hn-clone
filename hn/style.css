@@ -1,13 +1,22 @@
 #root{
     max-width: 1200px;
     margin: 0 auto; 
-    padding: 0 1rem;
+    padding: 0 .5rem;
 }
 
 html{
     font-family: 'Roboto', sans-serif;
     background: #f6f6f6;
     overflow-y: scroll;
+}
+
+body{
+    --hn-orange: #ff6600;
+    --comment-0: #492365;
+    --comment-1: #816099;
+    --comment-2: #603A7C;
+    --comment-3: #310F4A;
+    --comment-4: #1C032F;
 }
 
 code {
@@ -30,15 +39,13 @@ nav ul li{
 }
 
 nav ul li.selected{
-    border-bottom: 2px solid #f2f2f2;
+    border-bottom: 3px solid var(--hn-orange);
 }
 
 nav ul li:hover{
     background: #808080;
     cursor: pointer;
 }
-
-
 
 
 .story{
@@ -86,21 +93,40 @@ nav ul li:hover{
     display: none;
 }
 
-.comments.is-visible {
-    display: block;
+.self-text{
+    background: #dadada;
+    padding: .5rem;
+    font-size: .9rem;
+    margin: .5rem 0;
 }
 
 .comment{
-    margin: 1rem .5rem;
+    margin: .5rem 0 .5rem .5rem;
     padding: .5rem;
     font-size: .8rem;
-    border-left: 2px solid #808080;
-    background: #f2f2f2;
+    border-left: 2px solid var(--comment-0);
+    background: #dadada;
+}
 
+
+.comment > .comment {
+    background: rgba(251,251,251, 50%);
 }
 
 .comment a{
     overflow-wrap: break-word;
     word-wrap: break-word;
     word-break: break-word;
+}
+
+.comment .subtext{
+    margin-top: .25rem;
+}
+
+.is-hidden{
+    display:none;
+}
+
+.is-visible {
+    display: block;
 }

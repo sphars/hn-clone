@@ -132,10 +132,54 @@ function createComment(commentData, parentCard){
         commentDiv.innerHTML = commentData.text;
     
         let authorDiv = document.createElement('div');
-        authorDiv.innerText = `By: ${commentData.by} [${commentData.id}]`;
-    
+        authorDiv.classList.add('subtext');
+        
+        let timeElapse = document.createElement('span');
+        timeElapse.innerText = `${getElapsedTime(commentData.time * 1000)}`;
+        timeElapse.title = `${getNiceTime(commentData.time)}`;
+        
+        let commentToggle = document.createElement('span');
+        commentToggle.setAttribute('class', 'comment-toggle');
+        
+        if(commentData.kids){
+            commentToggle.classList.add('has-comments');
+            commentToggle.innerText = `Hide ${commentData.kids.length > 1 ? `${commentData.kids.length} comments`  : `${commentData.kids.length} comment`}`;
+            
+            commentToggle.addEventListener('click', function(){
+                var self = this;
+                var storyDiv = this.parentNode.parentNode;
+                var children = storyDiv.querySelectorAll('.comment');
+                children.forEach(element => {
+                    element.classList.toggle('is-hidden');
+                    if(element.classList.contains('is-hidden')){
+                        self.innerText = `View ${commentData.kids.length > 1 ? `${commentData.kids.length} comments`  : `${commentData.kids.length} comment`}`;
+                    } else{
+                        self.innerText = `Hide ${commentData.kids.length > 1 ? `${commentData.kids.length} comments`  : `${commentData.kids.length} comment`}`;
+                    }
+                });
+            });
+        } else{
+            commentToggle.innerText = 'No comments';
+        }
+        
+        if(commentData.kids){
+            for(var i = 0; i < commentData.kids.length; i++){
+                getComment(commentData.kids[i], commentDiv);
+            }
+        }
+        
+        let authorSpan = document.createElement('span');
+        let author = document.createElement('a');
+        author.setAttribute('href', `https://news.ycombinator.com/user?id=${commentData.by}`);
+        author.setAttribute('target', '_blank');
+        author.textContent = `${commentData.by}`;
+        authorSpan.append(author);
+
+        authorDiv.append('By ', authorSpan, ' ', timeElapse, ' | ', commentToggle);
+
         commentDiv.appendChild(authorDiv);
-        parentCard.appendChild(commentDiv);    
+        parentCard.appendChild(commentDiv);  
+        
     }    
 }
 
@@ -156,6 +200,7 @@ function selectStory(storyid, storyDiv){
     //check if commentscard is already created
     if(!storyDiv.querySelector('.comments')){
         commentsCard = createCommentsCard(selectedStory);
+
         storyDiv.appendChild(commentsCard);
     } else{
         commentsCard = storyDiv.querySelector('.comments');
@@ -194,6 +239,7 @@ function createStoryCard(story){
         var url = `https://news.ycombinator.com/item?id=${story.id}`
         domain.textContent = `(${getDomain(url)})`;
         storyTitle.setAttribute('href', url);
+        storyCard.classList.add('self-story');
     }
 
     // subtext links
@@ -227,20 +273,31 @@ function createStoryCard(story){
     commentToggle.setAttribute('class', 'comment-toggle');
 
     // check if the story has any comments
-    if(story.hasOwnProperty('descendants') && story.descendants > 0){
+    if(story.descendants){
         
-        commentToggle.innerText = `View ${story.descendants} Comments`;
+        commentToggle.innerText = `View ${story.descendants > 1 ? `${story.descendants} comments`  : `${story.descendants} comment`}`;
+
         commentToggle.classList.add('has-comments');
         
         if(story.descendants >= 100) commentToggle.classList.add('hot');
         
         commentToggle.addEventListener('click', function(){
+            var self = this;
             var storyDiv = this.parentNode.parentNode;
             selectStory(story.id, storyDiv);
+            
+            var commentDiv = storyDiv.querySelector('.comments');
+            commentDiv.classList.toggle('is-hidden');
+            if(commentDiv.classList.contains('is-hidden')){
+                self.innerText = `Hide ${story.descendants > 1 ? `${story.descendants} comments`  : `${story.descendants} comment`}`;
+            } else {
+                self.innerText = `View ${story.descendants > 1 ? `${story.descendants} comments`  : `${story.descendants} comment`}`;
+            }
+
         });
 
     } else{
-        commentToggle.innerText = '0 Comments';
+        commentToggle.innerText = 'No comments';
     }
 
     //add the story element
@@ -264,10 +321,16 @@ function createCommentsCard(story){
     let commentsCard = document.createElement('div');
     commentsCard.setAttribute('class', 'comments');
 
+    if(story.text){
+        let selfText = document.createElement('div');
+        selfText.classList.add('self-text');
+        selfText.innerHTML = story.text;
+        commentsCard.append(selfText);
+    }
+
     for (let i = 0; i < story.kids.length; i++) {
         getComment(story.kids[i], commentsCard);        
     }
-    // getComment(story.kids[0], commentsCard);
 
     return commentsCard;
 }
@@ -334,10 +397,12 @@ function changeNav(){
 
 var show = function(elem) {
     elem.classList.add('is-visible');
+    elem.classList.remove('is-hidden');
 };
 
 var hide = function(elem) {
     elem.classList.remove('is-visible');
+    elem.classList.add('is-hidden');
 };
 
 var toggle = function(elem) {
