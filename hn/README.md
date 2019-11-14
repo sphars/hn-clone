@@ -11,3 +11,7 @@ Goal is practice using JavaScript and APIs.
 * Better styles?
 * Cache results when navigating away from page
 * Save stories (where? local storage for now?)
+* Indicate OP replies in comments
+* Sort stories (maybe?)
+* Wrap URLs in cards (mobile-friendliness)
+* Fix reloading page defaults to Top
