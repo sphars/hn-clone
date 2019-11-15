@@ -15,3 +15,6 @@ Goal is practice using JavaScript and APIs.
 * Sort stories (maybe?)
 * Wrap URLs in cards (mobile-friendliness)
 * Fix reloading page defaults to Top
+
+### Disclaimer
+I  make no claims that this frontend for HN is any better than the offical website. In fact, it's probably worse. This is simply an exercise in working with an API and practicing my JavaScript.
