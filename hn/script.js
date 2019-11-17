@@ -142,8 +142,9 @@ function createComment(commentData, parentCard){
         commentToggle.setAttribute('class', 'comment-toggle');
         
         if(commentData.kids){
-            commentToggle.classList.add('has-comments');
             commentToggle.innerText = `Hide ${commentData.kids.length > 1 ? `${commentData.kids.length} comments`  : `${commentData.kids.length} comment`}`;
+            commentToggle.classList.add('has-comments');
+            commentToggle.classList.add('opened');
             
             commentToggle.addEventListener('click', function(){
                 var self = this;
@@ -153,8 +154,12 @@ function createComment(commentData, parentCard){
                     element.classList.toggle('is-hidden');
                     if(element.classList.contains('is-hidden')){
                         self.innerText = `View ${commentData.kids.length > 1 ? `${commentData.kids.length} comments`  : `${commentData.kids.length} comment`}`;
+                        self.classList.add('closed');
+                        self.classList.remove('opened');
                     } else{
                         self.innerText = `Hide ${commentData.kids.length > 1 ? `${commentData.kids.length} comments`  : `${commentData.kids.length} comment`}`;
+                        self.classList.add('opened');
+                        self.classList.remove('closed');        
                     }
                 });
             });
@@ -276,10 +281,11 @@ function createStoryCard(story){
     if(story.descendants){
         
         commentToggle.innerText = `View ${story.descendants > 1 ? `${story.descendants} comments`  : `${story.descendants} comment`}`;
-
-        commentToggle.classList.add('has-comments');
         
         if(story.descendants >= 100) commentToggle.classList.add('hot');
+
+        commentToggle.classList.add('has-comments');
+        commentToggle.classList.add('closed');
         
         commentToggle.addEventListener('click', function(){
             var self = this;
@@ -290,8 +296,12 @@ function createStoryCard(story){
             commentDiv.classList.toggle('is-hidden');
             if(commentDiv.classList.contains('is-hidden')){
                 self.innerText = `Hide ${story.descendants > 1 ? `${story.descendants} comments`  : `${story.descendants} comment`}`;
+                self.classList.add('opened');
+                self.classList.remove('closed');
             } else {
                 self.innerText = `View ${story.descendants > 1 ? `${story.descendants} comments`  : `${story.descendants} comment`}`;
+                self.classList.add('closed');
+                self.classList.remove('opened');
             }
 
         });

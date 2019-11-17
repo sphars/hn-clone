@@ -82,6 +82,22 @@ nav ul li:hover{
     text-decoration: underline;
 }
 
+
+
+.comment-toggle.has-comments::after{
+    display: inline-block;
+    text-decoration: none;
+    margin-left: .2rem;
+}
+
+.comment-toggle.has-comments.opened::after{
+    content: "\2bc5";
+}
+
+.comment-toggle.has-comments.closed::after{
+    content: "\2bc6";
+}
+
 .hot::before{
     content: "🔥";
     display:inline-block;
