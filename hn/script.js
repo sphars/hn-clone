@@ -224,7 +224,7 @@ function createStoryCard(story){
     // story title and domain
     let storyTitle = document.createElement('a');
     storyTitle.setAttribute('class', 'title')
-    storyTitle.setAttribute('targe', '_blank');
+    storyTitle.setAttribute('target', '_blank');
     storyTitle.innerHTML = story.title;
 
     let domain = document.createElement('span');
