@@ -53,6 +53,10 @@ nav ul li:hover{
     cursor: pointer;
 }
 
+.update-time{
+    text-align: right;
+    font-size: .75rem;
+}
 
 .story{
     margin: 1rem 0;

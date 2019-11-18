@@ -72,6 +72,21 @@ const getNiceTime = (timestamp) => {
     return time;
 }
 
+function updateLastUpdate() {
+    var updatedTimeDiv;
+
+    if(container.querySelector('.update-time')){
+        updatedTimeDiv = container.querySelector('.update-time');
+    } else{
+        updatedTime = document.createElement('div');
+        updatedTime.classList.add('update-time');
+    }
+
+    var now = new Date();
+    updatedTime.innerText = `Last updated: ${getNiceTime(now.getTime() / 1000)}`;
+    container.appendChild(updatedTime);
+}
+
 // get the top HN stories
 function getStories(feed){
     fetch(BASEURL + feed)
@@ -80,7 +95,7 @@ function getStories(feed){
         })
         .then(data => {
             console.log(`Num stories: ${data.length}`);
-
+            updateLastUpdate();
             //limit for now
             for(let i = 0; i < data.length && i < 50 ; i++){
                 getStoryDetails(data[i]);
