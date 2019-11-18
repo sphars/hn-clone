@@ -4,15 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>JS API Explorer</title>
+    <title>Hacker News API</title>
 
-    <link rel="icon" href='/favicon.ico'/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet"/>
+    <link rel="icon" href='favicon.ico'/>
 </head>
 <body>
-    <h1>A place to play around with REST APIs in JavaScript.</h1>
-    <ul>
-        <li><a href='hn/'>Hacker News API</a></li>
-    </ul>
-
+    <div id="root">
+        <h1>Hacker News Clone</h1>
+        <nav>
+            <ul>
+                <li class='nav-item selected' id='top'>Top</li>
+                <li class='nav-item' id='new'>New</li>
+                <li class='nav-item' id='best'>Best</li>
+                <li class='nav-item' id='show'>Show</li>
+                <li class='nav-item' id='ask'>Ask</li>
+                <li class='nav-item' id='jobs'>Jobs</li>
+            </ul>
+        </nav>
+        <!-- Content populated by script -->
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
