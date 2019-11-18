@@ -1,7 +1,7 @@
 #root{
     max-width: 1200px;
     margin: 0 auto; 
-    padding: 0 .5rem;
+    padding: 0 .25rem;
 }
 
 html{
@@ -19,8 +19,14 @@ body{
     --comment-4: #1C032F;
 }
 
+pre{
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
 code {
     font-family: 'Roboto Mono', monospace;
+
 }
 
 nav ul{
@@ -34,7 +40,7 @@ nav ul{
 }
 
 nav ul li{
-    padding: .5rem 1rem;
+    padding: .5rem .8rem;
     color: #f2f2f2;
 }
 
@@ -83,21 +89,6 @@ nav ul li:hover{
 }
 
 
-
-.comment-toggle.has-comments::after{
-    display: inline-block;
-    text-decoration: none;
-    margin-left: .2rem;
-}
-
-.comment-toggle.has-comments.opened::after{
-    content: "\2bc5";
-}
-
-.comment-toggle.has-comments.closed::after{
-    content: "\2bc6";
-}
-
 .hot::before{
     content: "🔥";
     display:inline-block;
@@ -105,28 +96,27 @@ nav ul li:hover{
     text-decoration: none;
 }
 
-.comments {
-    display: none;
-}
 
 .self-text{
     background: #dadada;
     padding: .5rem;
     font-size: .9rem;
     margin: .5rem 0;
+    border: 1px solid #808080;
 }
 
 .comment{
-    margin: .5rem 0 .5rem .5rem;
+    margin: .5rem 0;
     padding: .5rem;
     font-size: .8rem;
+    border: 1px solid #dadada;
     border-left: 2px solid var(--comment-0);
     background: #dadada;
 }
 
 
-.comment > .comment {
-    background: rgba(251,251,251, 50%);
+.comment .comments .comment {
+    background: rgba(251,251,251, 40%);
 }
 
 .comment a{
@@ -137,6 +127,7 @@ nav ul li:hover{
 
 .comment .subtext{
     margin-top: .25rem;
+    opacity: 80%;
 }
 
 .is-hidden{

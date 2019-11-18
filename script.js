@@ -129,6 +129,7 @@ function createComment(commentData, parentCard){
     if(!commentData.deleted){
         let commentDiv = document.createElement('div');
         commentDiv.setAttribute('class', 'comment');
+        commentDiv.classList.add('is-visible');
         commentDiv.innerHTML = commentData.text;
     
         let authorDiv = document.createElement('div');
@@ -140,37 +141,37 @@ function createComment(commentData, parentCard){
         
         let commentToggle = document.createElement('span');
         commentToggle.setAttribute('class', 'comment-toggle');
+
+        let commentsDiv = document.createElement('div');
+        commentsDiv.classList.add('comments');
+        commentsDiv.classList.add('is-visible');
         
         if(commentData.kids){
             commentToggle.innerText = `Hide ${commentData.kids.length > 1 ? `${commentData.kids.length} comments`  : `${commentData.kids.length} comment`}`;
             commentToggle.classList.add('has-comments');
-            commentToggle.classList.add('opened');
             
             commentToggle.addEventListener('click', function(){
                 var self = this;
                 var storyDiv = this.parentNode.parentNode;
                 var children = storyDiv.querySelectorAll('.comment');
                 children.forEach(element => {
-                    element.classList.toggle('is-hidden');
-                    if(element.classList.contains('is-hidden')){
+                    if(element.classList.contains('is-visible')){
                         self.innerText = `View ${commentData.kids.length > 1 ? `${commentData.kids.length} comments`  : `${commentData.kids.length} comment`}`;
-                        self.classList.add('closed');
-                        self.classList.remove('opened');
+                        hide(element);
                     } else{
                         self.innerText = `Hide ${commentData.kids.length > 1 ? `${commentData.kids.length} comments`  : `${commentData.kids.length} comment`}`;
-                        self.classList.add('opened');
-                        self.classList.remove('closed');        
+                        show(element);
                     }
                 });
             });
+
+
+            for(var i = 0; i < commentData.kids.length; i++){
+                getComment(commentData.kids[i], commentsDiv);
+            }
+
         } else{
             commentToggle.innerText = 'No comments';
-        }
-        
-        if(commentData.kids){
-            for(var i = 0; i < commentData.kids.length; i++){
-                getComment(commentData.kids[i], commentDiv);
-            }
         }
         
         let authorSpan = document.createElement('span');
@@ -183,6 +184,7 @@ function createComment(commentData, parentCard){
         authorDiv.append('By ', authorSpan, ' ', timeElapse, ' | ', commentToggle);
 
         commentDiv.appendChild(authorDiv);
+        commentDiv.appendChild(commentsDiv);
         parentCard.appendChild(commentDiv);  
         
     }    
@@ -209,9 +211,8 @@ function selectStory(storyid, storyDiv){
         storyDiv.appendChild(commentsCard);
     } else{
         commentsCard = storyDiv.querySelector('.comments');
+        toggle(commentsCard);
     }
-
-    toggle(commentsCard);
 }
 
 // creates HTML markup for a story
@@ -285,7 +286,6 @@ function createStoryCard(story){
         if(story.descendants >= 100) commentToggle.classList.add('hot');
 
         commentToggle.classList.add('has-comments');
-        commentToggle.classList.add('closed');
         
         commentToggle.addEventListener('click', function(){
             var self = this;
@@ -293,15 +293,12 @@ function createStoryCard(story){
             selectStory(story.id, storyDiv);
             
             var commentDiv = storyDiv.querySelector('.comments');
-            commentDiv.classList.toggle('is-hidden');
-            if(commentDiv.classList.contains('is-hidden')){
+            if(commentDiv.classList.contains('is-visible')){
                 self.innerText = `Hide ${story.descendants > 1 ? `${story.descendants} comments`  : `${story.descendants} comment`}`;
-                self.classList.add('opened');
-                self.classList.remove('closed');
+                show(commentDiv);
             } else {
                 self.innerText = `View ${story.descendants > 1 ? `${story.descendants} comments`  : `${story.descendants} comment`}`;
-                self.classList.add('closed');
-                self.classList.remove('opened');
+                hide(commentDiv);
             }
 
         });
@@ -330,6 +327,7 @@ function createCommentsCard(story){
 
     let commentsCard = document.createElement('div');
     commentsCard.setAttribute('class', 'comments');
+    commentsCard.classList.add('is-visible');
 
     if(story.text){
         let selfText = document.createElement('div');
@@ -411,8 +409,8 @@ var show = function(elem) {
 };
 
 var hide = function(elem) {
-    elem.classList.remove('is-visible');
     elem.classList.add('is-hidden');
+    elem.classList.remove('is-visible');
 };
 
 var toggle = function(elem) {
