@@ -87,6 +87,11 @@ function updateLastUpdate() {
     container.appendChild(updatedTime);
 }
 
+// get saved stories
+function getSavedStories(){
+    console.log('saved stories');
+}
+
 // get the top HN stories
 function getStories(feed){
     fetch(BASEURL + feed)
@@ -334,7 +339,7 @@ function createStoryCard(story){
     headline.appendChild(domain);
 
     //add links element
-    subtext.append(score, ' by ', authorSpan, ' ', timeElapse, ' | ', commentToggle);
+    subtext.append(score, ' by ', authorSpan, ' ', timeElapse, ' | ', 'Save', ' | ', commentToggle);
 
 }
 
@@ -412,6 +417,9 @@ function changeNav(){
             break;
         case 'jobs':
             getStories(JOBSTORIES);
+            break;
+        case 'saved':
+            getSavedStories();
             break;
         default:
             getStories(TOPSTORIES);
