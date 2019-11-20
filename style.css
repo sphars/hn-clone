@@ -82,6 +82,14 @@ nav ul li:hover{
     font-size: .75rem;
 }
 
+.save{
+    cursor: pointer;
+}
+
+.save:hover{
+    text-decoration: underline;
+}
+
 .comment-toggle{
     color: #001628;
     cursor: default;
@@ -132,6 +140,20 @@ nav ul li:hover{
 .comment .subtext{
     margin-top: .25rem;
     opacity: 80%;
+}
+
+.records {
+    
+}
+
+.record{
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #fff;
+}
+
+.record .headline{
+    margin-bottom: 1rem;
 }
 
 .is-hidden{

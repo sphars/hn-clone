@@ -24,11 +24,12 @@ const bestNav = document.getElementById('best');
 const askNav = document.getElementById('ask');
 const showNav = document.getElementById('show');
 const jobNav = document.getElementById('jobs');
+const savedNav = document.getElementById('saved');
 
 var navItems = document.getElementsByClassName('nav-item');
 
-for (var i=0; i<navItems.length; i++){
-    navItems[i].addEventListener('click', changeNav);
+for (var item of navItems){
+    item.addEventListener('click', changeNav);
 }
 
 // array for stories
@@ -89,7 +90,69 @@ function updateLastUpdate() {
 
 // get saved stories
 function getSavedStories(){
-    console.log('saved stories');
+
+    // get records out of storage
+    var records = localStorage.getItem('records') ? JSON.parse(localStorage.getItem('records')) : [];
+
+    // create a containing div
+    var recordsDiv = document.createElement('div');
+    recordsDiv.classList.add('records');
+    
+    // create a heading div
+    var recordsDivHeader = document.createElement('h2');
+
+    container.appendChild(recordsDivHeader);
+    container.appendChild(recordsDiv);
+    
+    // check if there are any saved stories
+    if(records.length > 0){
+        recordsDivHeader.innerText = `${records.length} saved stor${records.length === 1 ? 'y' : 'ies' }`;
+
+        for(record of records){
+            var recordCard = createdSavedStoryCard(record);
+            recordsDiv.appendChild(recordCard);
+        }
+    } else {
+        recordsDivHeader.innerText = 'No saved stories';
+    }
+    
+
+}
+
+// create a saved story card and return it
+function createdSavedStoryCard(record){
+    var recordCard = document.createElement('div');
+    recordCard.classList.add('record');
+
+    var recordHeadline = document.createElement('div');
+    recordHeadline.classList.add('headline');
+
+    // check if there is an associated url
+    var recordTitle = document.createElement('a');
+    recordTitle.classList = ('title');
+    recordTitle.innerText = record.story.title;
+    var url = record.story.url ? record.story.url : `https://news.ycombinator.com/item?id=${record.story.id}`;
+    recordTitle.setAttribute('href', url);
+    recordTitle.setAttribute('target', '_blank');
+
+    //append nodes to headline
+    recordHeadline.append(recordTitle);
+
+    var recordSubtext = document.createElement('div');
+    recordSubtext.classList = ('subtext');
+
+    var recordUrl = document.createElement('span');
+    recordUrl.innerText = `(${getDomain(url)})`;
+    
+    //append nodes to subtext
+    recordSubtext.appendChild(recordUrl);
+
+    // append nodes to record card
+    recordCard.appendChild(recordHeadline);
+    recordCard.appendChild(recordSubtext);
+
+
+    return recordCard;
 }
 
 // get the top HN stories
@@ -185,9 +248,8 @@ function createComment(commentData, parentCard){
                 });
             });
 
-
-            for(var i = 0; i < commentData.kids.length; i++){
-                getComment(commentData.kids[i], commentsDiv);
+            for(var item of commentData.kids){
+                getComment(item, commentsDiv);
             }
 
         } else{
@@ -210,12 +272,14 @@ function createComment(commentData, parentCard){
     }    
 }
 
-function clearStories(){
-    stories.length = 0;
-    var storyElements = document.getElementsByClassName('story');
+function clearStoryContainer(){
 
-    while(storyElements.length > 0){
-        storyElements[0].parentNode.removeChild(storyElements[0]);
+    // empty global stories
+    stories.length = 0;
+
+    // remove all nodes in container
+    while(container.hasChildNodes()){
+        container.removeChild(container.lastChild);
     }
 }
 
@@ -233,6 +297,32 @@ function selectStory(storyid, storyDiv){
         commentsCard = storyDiv.querySelector('.comments');
         toggle(commentsCard);
     }
+}
+
+// creates a saved story record to add to storage
+function saveStory(storyid){
+    // get the story from the array of stories
+    var selectedStory = stories.find(x => x.id === storyid);
+    console.log(selectedStory);
+
+    if(selectedStory){
+        let savedStoryRecord = {
+            date: new Date(),
+            story: selectedStory
+        }
+        pushRecord(savedStoryRecord);
+    }
+}
+
+// saves a record to localstorage
+function pushRecord(record){
+    // get the records out of storage
+    var records = localStorage.getItem('records') ? JSON.parse(localStorage.getItem('records')) : [];
+
+    records.push(record);
+    localStorage.setItem('records', JSON.stringify(records));
+
+    console.log(localStorage);
 }
 
 // creates HTML markup for a story
@@ -327,6 +417,15 @@ function createStoryCard(story){
         commentToggle.innerText = 'No comments';
     }
 
+    // create the save "button"
+    let saveButton = document.createElement('span');
+    saveButton.classList.add('save');
+    saveButton.innerText = "Save";
+    saveButton.addEventListener('click', function(){
+        var storyId = story.id;
+        saveStory(storyId);
+    });
+
     //add the story element
     container.appendChild(storyCard);
 
@@ -339,7 +438,7 @@ function createStoryCard(story){
     headline.appendChild(domain);
 
     //add links element
-    subtext.append(score, ' by ', authorSpan, ' ', timeElapse, ' | ', 'Save', ' | ', commentToggle);
+    subtext.append(score, ' by ', authorSpan, ' ', timeElapse, ' | ', saveButton, ' | ', commentToggle);
 
 }
 
@@ -356,8 +455,8 @@ function createCommentsCard(story){
         commentsCard.append(selfText);
     }
 
-    for (let i = 0; i < story.kids.length; i++) {
-        getComment(story.kids[i], commentsCard);        
+    for(var item of story.kids){
+        getComment(item, commentsCard);
     }
 
     return commentsCard;
@@ -390,11 +489,11 @@ function getDomain(url){
 
 // change navigation between the different feeds
 function changeNav(){
-    for (var i=0; i<navItems.length; i++){
-        navItems[i].classList.remove('selected');
+    for(var item of navItems){
+        item.classList.remove('selected');
     }
 
-    clearStories();
+    clearStoryContainer();
 
     this.className += ' selected';
     console.log(this.id);
