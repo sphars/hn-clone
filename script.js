@@ -125,27 +125,33 @@ function createdSavedStoryCard(record){
     recordCard.classList.add('record');
 
     var recordHeadline = document.createElement('div');
-    recordHeadline.classList.add('headline');
+    //recordHeadline.classList.add('headline');
 
     // check if there is an associated url
     var recordTitle = document.createElement('a');
-    recordTitle.classList = ('title');
+    //recordTitle.classList = ('title');
     recordTitle.innerText = record.story.title;
     var url = record.story.url ? record.story.url : `https://news.ycombinator.com/item?id=${record.story.id}`;
     recordTitle.setAttribute('href', url);
     recordTitle.setAttribute('target', '_blank');
 
+    var domain = document.createElement('span');
+    //domain.classList.add('domain');
+    domain.innerText = `(${getDomain(url)})`;
+
+    // date saved
+    var savedDiv = document.createElement('div');
+    savedDiv.innerText = `Saved ${record.date}`;
+
     //append nodes to headline
-    recordHeadline.append(recordTitle);
+    recordHeadline.appendChild(recordTitle);
 
     var recordSubtext = document.createElement('div');
-    recordSubtext.classList = ('subtext');
-
-    var recordUrl = document.createElement('span');
-    recordUrl.innerText = `(${getDomain(url)})`;
+    //recordSubtext.classList = ('subtext');
     
     //append nodes to subtext
-    recordSubtext.appendChild(recordUrl);
+    recordSubtext.appendChild(domain);
+    recordSubtext.appendChild(savedDiv);
 
     // append nodes to record card
     recordCard.appendChild(recordHeadline);
