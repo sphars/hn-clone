@@ -141,7 +141,8 @@ function createdSavedStoryCard(record){
 
     // date saved
     var savedDiv = document.createElement('div');
-    savedDiv.innerText = `Saved ${record.date}`;
+    var savedDate = new Date(record.date);
+    savedDiv.innerText = `Saved: ${getElapsedTime(savedDate.getTime())}`;
 
     //append nodes to headline
     recordHeadline.appendChild(recordTitle);
